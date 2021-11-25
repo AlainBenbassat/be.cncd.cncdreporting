@@ -4,7 +4,7 @@ use CRM_Cncdreporting_ExtensionUtil as E;
 class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
   public function __construct() {
     $this->_columns = [
-      'civicrm_contact' => [
+      'civicrm_dummy_entity' => [
         'fields' => $this->getReportColumns(),
         'filters' => $this->getReportFilters(),
       ],
@@ -86,15 +86,15 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
     foreach ($ambassadorNames as $ambassadorName) {
       $row = [];
 
-      $row['civicrm_contact_column1'] = $ambassadorName;
-      $row['civicrm_contact_column2'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_contact_column3'] = '';
-      $row['civicrm_contact_column4'] = '';
-      $row['civicrm_contact_column5'] = '';
-      $row['civicrm_contact_column6'] = '';
-      $row['civicrm_contact_column7'] = '';
-      $row['civicrm_contact_column8'] = '';
-      $row['civicrm_contact_column9'] = '';
+      $row['civicrm_dummy_entity_column1'] = $ambassadorName;
+      $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
+      $row['civicrm_dummy_entity_column3'] = '';
+      $row['civicrm_dummy_entity_column4'] = '';
+      $row['civicrm_dummy_entity_column5'] = '';
+      $row['civicrm_dummy_entity_column6'] = '';
+      $row['civicrm_dummy_entity_column7'] = '';
+      $row['civicrm_dummy_entity_column8'] = '';
+      $row['civicrm_dummy_entity_column9'] = '';
 
       $rows[] = $row;
     }
