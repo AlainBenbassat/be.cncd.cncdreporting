@@ -20,15 +20,15 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
       'name' => 'Ambassadeur',
       'num_sepa_street' => 'Nombre de SEPA rue',
       'num_sepa_real' => 'Nombre de SEPA réel',
-      'num_sepa_under_10' => 'Nombre de SEPA réel -10€',
-      'num_sepa_10' => 'Nombre de SEPA réel 10€',
-      'num_sepa_above_10' => 'Nombre de SEPA réel +10€',
       'avg_age' => 'Age moyen',
       'pct_under_25' => '% moins de 25 ans',
       'num_completed_before_first' => 'Nombre de completed avant FIRST',
       'pct_completed_before_first' => '% Completed avant FIRST',
       'num_completed' => 'Nombre de completed',
       'pct_completed' => '% Completed',
+      'num_sepa_under_10' => 'Nombre de SEPA réel -10€',
+      'num_sepa_10' => 'Nombre de SEPA réel 10€',
+      'num_sepa_above_10' => 'Nombre de SEPA réel +10€',
     ];
 
     $i = 1;
