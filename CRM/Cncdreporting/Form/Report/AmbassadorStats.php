@@ -43,19 +43,13 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
   }
 
   private function getReportFilters() {
-    $defaultFromDate = '2021-09-01';
-    $defaultToDate = '2021-09-01';
-
     $filters = [
       'signature_date' => [
         'title' => 'Date de signature',
         'dbAlias' => '1',
         'type' => CRM_Utils_Type::T_DATE,
         'operatorType' => CRM_Report_Form::OP_DATE,
-        'default' => [
-          'from' => $defaultFromDate,
-          'to' => $defaultToDate,
-        ]
+        'default' => 'previous.week',
       ],
     ];
 

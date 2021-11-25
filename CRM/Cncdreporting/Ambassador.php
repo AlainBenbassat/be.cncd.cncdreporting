@@ -10,9 +10,9 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        source like %1
+        m.source like %1
       and
-        date between %2 and %3
+        m.date between %2 and %3
       and
         c.is_deleted = 0
     ";
