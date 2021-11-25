@@ -51,6 +51,34 @@ class CRM_Cncdreporting_Ambassador {
     return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
   }
 
+  public function getStatSepaAverageAge($ambassadorName, $fromDate, $toDate) {
+    $sql = "
+      select
+        floor(avg(TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE())))
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      where
+        m.source like %1
+      and
+        m.date between %2 and %3
+      and
+        m.status <> 'COMPLETE'
+      and
+        c.is_deleted = 0
+      group by
+        c.id
+    ";
+    $sqlParams = [
+      1 => ['%' . $ambassadorName . '%', 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
   public function getAllAmbassadors() {
     $ambassadors = [];
 
