@@ -26,7 +26,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
       'pct_completed_before_first' => '% Completed avant FIRST',
       'num_completed' => 'Nombre de completed',
       'pct_completed' => '% Completed',
-      'pct_cancelled_first' => '% FIRST annulé',
+      'pct_cancelled_first' => 'Non-starters',
       'num_sepa_under_10' => 'Nombre de SEPA réel -10€',
       'num_sepa_10' => 'Nombre de SEPA réel 10€',
       'num_sepa_above_10' => 'Nombre de SEPA réel +10€',
@@ -119,7 +119,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
       $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
 
       $numSepaCancelledFirst = $ambassador->getStatSepaCancelledFirst($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculatePercentage($numSepaCancelledFirst, $numSepaReal);
+      $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculateValueAndPercentage($numSepaCancelledFirst, $numSepaReal);
 
       $rows[] = $row;
     }
@@ -155,7 +155,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
     $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage('', $numSepaReal);
 
     $numSepaCancelledFirst = $ambassador->getStatSepaCancelledFirst('', $dateFrom, $dateTo);
-    $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculatePercentage($numSepaCancelledFirst, $numSepaReal);
+    $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculateValueAndPercentage($numSepaCancelledFirst, $numSepaReal);
 
     $this->makeBold($row);
 
