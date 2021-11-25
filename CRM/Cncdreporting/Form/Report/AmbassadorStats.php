@@ -88,9 +88,20 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
       $row['civicrm_dummy_entity_column1'] = $ambassadorName;
       $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column3'] = $ambassador->getStatSepaReal($ambassadorName, $dateFrom, $dateTo);
+
+      $numSepaReal = $ambassador->getStatSepaReal($ambassadorName, $dateFrom, $dateTo);
+      $row['civicrm_dummy_entity_column3'] = $numSepaReal;
+
       $row['civicrm_dummy_entity_column4'] = $ambassador->getStatSepaAverageAge($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column5'] = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
+
+      $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
+      if ($numSepaReal) {
+        $percentageSepaRealMinus25 = round($numSepaRealMinus25 / $numSepaReal * 100, 1) . '%';
+      }
+      else {
+        $percentageSepaRealMinus25 = '';
+      }
+      $row['civicrm_dummy_entity_column5'] = $percentageSepaRealMinus25;
       $row['civicrm_dummy_entity_column6'] = '';
       $row['civicrm_dummy_entity_column7'] = '';
       $row['civicrm_dummy_entity_column8'] = '';
