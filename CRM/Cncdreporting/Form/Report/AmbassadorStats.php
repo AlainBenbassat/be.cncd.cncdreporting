@@ -88,7 +88,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
       $row['civicrm_dummy_entity_column1'] = $ambassadorName;
       $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column3'] = '';
+      $row['civicrm_dummy_entity_column3'] = $ambassador->getStatSepaReal($ambassadorName, $dateFrom, $dateTo);;
       $row['civicrm_dummy_entity_column4'] = '';
       $row['civicrm_dummy_entity_column5'] = '';
       $row['civicrm_dummy_entity_column6'] = '';
