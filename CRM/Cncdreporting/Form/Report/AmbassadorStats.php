@@ -96,14 +96,44 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
       $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
       $row['civicrm_dummy_entity_column5'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
-      $row['civicrm_dummy_entity_column6'] = '';
-      $row['civicrm_dummy_entity_column7'] = '';
+
+      $numSepaCompletedBeforeFirst = $ambassador->getStatSepaCompletedBeforeFirst($ambassadorName, $dateFrom, $dateTo);
+      $row['civicrm_dummy_entity_column6'] = $numSepaCompletedBeforeFirst;
+      $row['civicrm_dummy_entity_column7'] = $this->calculatePercentage($numSepaCompletedBeforeFirst, $numSepaReal);
 
       $numSepaCompleted = $ambassador->getStatSepaCompleted($ambassadorName, $dateFrom, $dateTo);
       $row['civicrm_dummy_entity_column8'] = $numSepaCompleted;
-      $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);;
+      $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
 
       $rows[] = $row;
+    }
+
+    $row = [];
+
+    $row['civicrm_dummy_entity_column1'] = 'TOTAL';
+    $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet('', $dateFrom, $dateTo);
+
+    $numSepaReal = $ambassador->getStatSepaReal('', $dateFrom, $dateTo);
+    $row['civicrm_dummy_entity_column3'] = $numSepaReal;
+
+    $row['civicrm_dummy_entity_column4'] = $ambassador->getStatSepaAverageAge('', $dateFrom, $dateTo);
+
+    $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25('', $dateFrom, $dateTo);
+    $row['civicrm_dummy_entity_column5'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
+    $row['civicrm_dummy_entity_column6'] = '';
+    $row['civicrm_dummy_entity_column7'] = '';
+
+    $numSepaCompleted = $ambassador->getStatSepaCompleted('', $dateFrom, $dateTo);
+    $row['civicrm_dummy_entity_column8'] = $numSepaCompleted;
+    $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage('', $numSepaReal);
+    $this->makeBold($row);
+
+    $rows[] = $row;
+  }
+
+  private function makeBold(&$row) {
+    foreach ($row as $k => $v) {
+      $row[$k] = "<b>$v</b>";
     }
   }
 
