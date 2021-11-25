@@ -96,7 +96,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
       $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
       if ($numSepaReal) {
-        $percentageSepaRealMinus25 = round($numSepaRealMinus25 / $numSepaReal * 100, 1) . '%';
+        $percentageSepaRealMinus25 = round($numSepaRealMinus25 / $numSepaReal * 100, 1) . '&nbsp;%';
       }
       else {
         $percentageSepaRealMinus25 = '';
