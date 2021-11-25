@@ -17,20 +17,23 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
     $cols = [];
 
     $colTitles = [
-      'Ambassadeur',
-      'Nombre de SEPA rue',
-      'Nombre de SEPA réel',
-      'Age moyen',
-      '% moins de 25 ans',
-      'Nombre de completed avant FIRST',
-      '% Completed avant FIRST',
-      'Nombre de completed',
-      '% Completed',
+      'name' => 'Ambassadeur',
+      'num_sepa_street' => 'Nombre de SEPA rue',
+      'num_sepa_real' => 'Nombre de SEPA réel',
+      'num_sepa_under_10' => 'Nombre de SEPA réel -10€',
+      'num_sepa_10' => 'Nombre de SEPA réel 10€',
+      'num_sepa_above_10' => 'Nombre de SEPA réel +10€',
+      'avg_age' => 'Age moyen',
+      'pct_under_25' => '% moins de 25 ans',
+      'num_completed_before_first' => 'Nombre de completed avant FIRST',
+      'pct_completed_before_first' => '% Completed avant FIRST',
+      'num_completed' => 'Nombre de completed',
+      'pct_completed' => '% Completed',
     ];
 
     $i = 1;
-    foreach ($colTitles as $colTitle) {
-      $cols["column$i"] = [
+    foreach ($colTitles as $k => $colTitle) {
+      $cols[$k] = [
         'title' => $colTitle,
         'required' => TRUE,
         'dbAlias' => '1',
@@ -86,48 +89,66 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
     foreach ($ambassadorNames as $ambassadorName) {
       $row = [];
 
-      $row['civicrm_dummy_entity_column1'] = $ambassadorName;
-      $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
+      $row['civicrm_dummy_entity_name'] = $ambassadorName;
+      $row['civicrm_dummy_entity_num_sepa_street'] = $ambassador->getStatSepaStreet($ambassadorName, $dateFrom, $dateTo);
 
       $numSepaReal = $ambassador->getStatSepaReal($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column3'] = $numSepaReal;
+      $row['civicrm_dummy_entity_num_sepa_real'] = $numSepaReal;
 
-      $row['civicrm_dummy_entity_column4'] = $ambassador->getStatSepaAverageAge($ambassadorName, $dateFrom, $dateTo);
+      $numSepaRealUnder10 = $ambassador->getStatSepaRealWithValue($ambassadorName, $dateFrom, $dateTo, ' < 10 ');
+      $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealUnder10, $numSepaReal);
+
+      $numSepaReal10 = $ambassador->getStatSepaRealWithValue($ambassadorName, $dateFrom, $dateTo, ' = 10 ');
+      $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
+
+      $numSepaRealAbove10 = $ambassador->getStatSepaRealWithValue($ambassadorName, $dateFrom, $dateTo, ' > 10 ');
+      $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
+
+      $row['civicrm_dummy_entity_avg_age'] = $ambassador->getStatSepaAverageAge($ambassadorName, $dateFrom, $dateTo);
 
       $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column5'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
+      $row['civicrm_dummy_entity_pct_under_25'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
 
       $numSepaCompletedBeforeFirst = $ambassador->getStatSepaCompletedBeforeFirst($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column6'] = $numSepaCompletedBeforeFirst;
-      $row['civicrm_dummy_entity_column7'] = $this->calculatePercentage($numSepaCompletedBeforeFirst, $numSepaReal);
+      $row['civicrm_dummy_entity_num_completed_before_first'] = $numSepaCompletedBeforeFirst;
+      $row['civicrm_dummy_entity_pct_completed_before_first'] = $this->calculatePercentage($numSepaCompletedBeforeFirst, $numSepaReal);
 
       $numSepaCompleted = $ambassador->getStatSepaCompleted($ambassadorName, $dateFrom, $dateTo);
-      $row['civicrm_dummy_entity_column8'] = $numSepaCompleted;
-      $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
+      $row['civicrm_dummy_entity_num_completed'] = $numSepaCompleted;
+      $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
 
       $rows[] = $row;
     }
 
     $row = [];
 
-    $row['civicrm_dummy_entity_column1'] = 'TOTAL';
-    $row['civicrm_dummy_entity_column2'] = $ambassador->getStatSepaStreet('', $dateFrom, $dateTo);
+    $row['civicrm_dummy_entity_name'] = 'TOTAL';
+    $row['civicrm_dummy_entity_num_sepa_street'] = $ambassador->getStatSepaStreet('', $dateFrom, $dateTo);
 
     $numSepaReal = $ambassador->getStatSepaReal('', $dateFrom, $dateTo);
-    $row['civicrm_dummy_entity_column3'] = $numSepaReal;
+    $row['civicrm_dummy_entity_num_sepa_real'] = $numSepaReal;
 
-    $row['civicrm_dummy_entity_column4'] = $ambassador->getStatSepaAverageAge('', $dateFrom, $dateTo);
+    $numSepaRealUnder10 = $ambassador->getStatSepaRealWithValue('', $dateFrom, $dateTo, ' < 10 ');
+    $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealUnder10, $numSepaReal);
+
+    $numSepaReal10 = $ambassador->getStatSepaRealWithValue('', $dateFrom, $dateTo, ' = 10 ');
+    $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
+
+    $numSepaRealAbove10 = $ambassador->getStatSepaRealWithValue('', $dateFrom, $dateTo, ' > 10 ');
+    $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
+
+    $row['civicrm_dummy_entity_avg_age'] = $ambassador->getStatSepaAverageAge('', $dateFrom, $dateTo);
 
     $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25('', $dateFrom, $dateTo);
-    $row['civicrm_dummy_entity_column5'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
+    $row['civicrm_dummy_entity_pct_under_25'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
 
     $numSepaCompletedBeforeFirst = $ambassador->getStatSepaCompletedBeforeFirst('', $dateFrom, $dateTo);
-    $row['civicrm_dummy_entity_column6'] = $numSepaCompletedBeforeFirst;
-    $row['civicrm_dummy_entity_column7'] = $this->calculatePercentage($numSepaCompletedBeforeFirst, $numSepaReal);
+    $row['civicrm_dummy_entity_num_completed_before_first'] = $numSepaCompletedBeforeFirst;
+    $row['civicrm_dummy_entity_pct_completed_before_first'] = $this->calculatePercentage($numSepaCompletedBeforeFirst, $numSepaReal);
 
     $numSepaCompleted = $ambassador->getStatSepaCompleted('', $dateFrom, $dateTo);
-    $row['civicrm_dummy_entity_column8'] = $numSepaCompleted;
-    $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage('', $numSepaReal);
+    $row['civicrm_dummy_entity_num_completed'] = $numSepaCompleted;
+    $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage('', $numSepaReal);
     $this->makeBold($row);
 
     $rows[] = $row;
@@ -142,6 +163,15 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
   private function calculatePercentage($numSegment, $numTotal) {
     if ($numTotal) {
       return round($numSegment / $numTotal * 100, 1) . '&nbsp;%';
+    }
+    else {
+      return '';
+    }
+  }
+
+  private function calculateValueAndPercentage($numSegment, $numTotal) {
+    if ($numTotal) {
+      return $numSegment . ' (' . $this->calculatePercentage($numSegment, $numTotal) . ')';
     }
     else {
       return '';
