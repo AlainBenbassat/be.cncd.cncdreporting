@@ -99,10 +99,10 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
       $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealUnder10, $numSepaReal);
 
       $numSepaReal10 = $ambassador->getStatSepaRealWithValue($ambassadorName, $dateFrom, $dateTo, ' = 10 ');
-      $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
+      $row['civicrm_dummy_entity_num_sepa_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
 
       $numSepaRealAbove10 = $ambassador->getStatSepaRealWithValue($ambassadorName, $dateFrom, $dateTo, ' > 10 ');
-      $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
+      $row['civicrm_dummy_entity_num_sepa_above_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
 
       $row['civicrm_dummy_entity_avg_age'] = $ambassador->getStatSepaAverageAge($ambassadorName, $dateFrom, $dateTo);
 
@@ -132,10 +132,10 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
     $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealUnder10, $numSepaReal);
 
     $numSepaReal10 = $ambassador->getStatSepaRealWithValue('', $dateFrom, $dateTo, ' = 10 ');
-    $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
+    $row['civicrm_dummy_entity_num_sepa_10'] = $this->calculateValueAndPercentage($numSepaReal10, $numSepaReal);
 
     $numSepaRealAbove10 = $ambassador->getStatSepaRealWithValue('', $dateFrom, $dateTo, ' > 10 ');
-    $row['civicrm_dummy_entity_num_sepa_under_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
+    $row['civicrm_dummy_entity_num_sepa_above_10'] = $this->calculateValueAndPercentage($numSepaRealAbove10, $numSepaReal);
 
     $row['civicrm_dummy_entity_avg_age'] = $ambassador->getStatSepaAverageAge('', $dateFrom, $dateTo);
 
