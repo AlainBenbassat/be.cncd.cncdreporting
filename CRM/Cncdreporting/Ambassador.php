@@ -60,7 +60,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       inner join
-        civicrm_contribution cb on cb.id = m.first_contribution_id
+        civicrm_contribution_recur cbr on cbr.id = m.entity_id
       where
         m.source like %1
       and
@@ -68,7 +68,7 @@ class CRM_Cncdreporting_Ambassador {
       and
         m.status <> 'COMPLETE'
       and
-        cb.total_amount $valueExpression
+        cbr.amount $valueExpression
       and
         c.is_deleted = 0
     ";
