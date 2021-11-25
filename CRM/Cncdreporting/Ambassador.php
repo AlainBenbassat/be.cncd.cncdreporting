@@ -93,8 +93,6 @@ class CRM_Cncdreporting_Ambassador {
         m.status <> 'COMPLETE'
       and
         c.is_deleted = 0
-      group by
-        c.id
     ";
     $sqlParams = [
       1 => ['%' . $ambassadorName . '%', 'String'],
