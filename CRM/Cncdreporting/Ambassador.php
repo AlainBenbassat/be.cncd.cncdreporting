@@ -2,6 +2,8 @@
 
 class CRM_Cncdreporting_Ambassador {
   public function getStatSepaStreet($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -10,14 +12,14 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -26,6 +28,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaReal($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -34,7 +38,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -43,7 +47,7 @@ class CRM_Cncdreporting_Ambassador {
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -52,6 +56,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaRealWithValue($ambassadorName, $fromDate, $toDate, $valueExpression) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -62,7 +68,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contribution_recur cbr on cbr.id = m.entity_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -73,7 +79,7 @@ class CRM_Cncdreporting_Ambassador {
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -82,6 +88,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaCompleted($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -90,7 +98,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -99,7 +107,7 @@ class CRM_Cncdreporting_Ambassador {
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -108,6 +116,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaCompletedBeforeFirst($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -118,7 +128,7 @@ class CRM_Cncdreporting_Ambassador {
       left outer join
         civicrm_contribution cb on cb.id = m.first_contribution_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -129,7 +139,7 @@ class CRM_Cncdreporting_Ambassador {
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -138,6 +148,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaAverageAge($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         floor(avg(TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE())))
@@ -146,7 +158,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -155,7 +167,7 @@ class CRM_Cncdreporting_Ambassador {
         c.is_deleted = 0
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -164,6 +176,8 @@ class CRM_Cncdreporting_Ambassador {
   }
 
   public function getStatSepaRealMinus25($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
     $sql = "
       select
         count(*)
@@ -172,7 +186,7 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
-        m.source like %1
+        m.source $sourceOperator %1
       and
         m.date between %2 and %3
       and
@@ -183,7 +197,7 @@ class CRM_Cncdreporting_Ambassador {
         TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) < 25
     ";
     $sqlParams = [
-      1 => ['%' . $ambassadorName . '%', 'String'],
+      1 => [$sourceValue, 'String'],
       2 => [$fromDate, 'String'],
       3 => [$toDate, 'String'],
     ];
@@ -215,5 +229,18 @@ class CRM_Cncdreporting_Ambassador {
     }
 
     return $ambassadors;
+  }
+
+  private function getSourceOperatorAndValue($ambassadorName) {
+    if (empty($ambassadorName)) {
+      $operator = 'not like';
+      $value = 'mailing%';
+    }
+    else {
+      $operator = 'like';
+      $value = "%$ambassadorName%";
+    }
+
+    return [$operator, $value];
   }
 }
