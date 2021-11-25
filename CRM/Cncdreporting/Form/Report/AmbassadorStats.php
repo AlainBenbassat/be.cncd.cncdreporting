@@ -95,19 +95,24 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
       $row['civicrm_dummy_entity_column4'] = $ambassador->getStatSepaAverageAge($ambassadorName, $dateFrom, $dateTo);
 
       $numSepaRealMinus25 = $ambassador->getStatSepaRealMinus25($ambassadorName, $dateFrom, $dateTo);
-      if ($numSepaReal) {
-        $percentageSepaRealMinus25 = round($numSepaRealMinus25 / $numSepaReal * 100, 1) . '&nbsp;%';
-      }
-      else {
-        $percentageSepaRealMinus25 = '';
-      }
-      $row['civicrm_dummy_entity_column5'] = $percentageSepaRealMinus25;
+      $row['civicrm_dummy_entity_column5'] = $this->calculatePercentage($numSepaRealMinus25, $numSepaReal);
       $row['civicrm_dummy_entity_column6'] = '';
       $row['civicrm_dummy_entity_column7'] = '';
-      $row['civicrm_dummy_entity_column8'] = '';
-      $row['civicrm_dummy_entity_column9'] = '';
+
+      $numSepaCompleted = $ambassador->getStatSepaCompleted($ambassadorName, $dateFrom, $dateTo);
+      $row['civicrm_dummy_entity_column8'] = $numSepaCompleted;
+      $row['civicrm_dummy_entity_column9'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);;
 
       $rows[] = $row;
+    }
+  }
+
+  private function calculatePercentage($numSegment, $numTotal) {
+    if ($numTotal) {
+      return round($numSegment / $numTotal * 100, 1) . '&nbsp;%';
+    }
+    else {
+      return '';
     }
   }
 
