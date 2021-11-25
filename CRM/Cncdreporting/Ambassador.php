@@ -12,6 +12,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -38,6 +40,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -68,6 +72,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contribution_recur cbr on cbr.id = m.entity_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -98,6 +104,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -128,6 +136,8 @@ class CRM_Cncdreporting_Ambassador {
       left outer join
         civicrm_contribution cb on cb.id = m.first_contribution_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -135,6 +145,38 @@ class CRM_Cncdreporting_Ambassador {
         m.status = 'COMPLETE'
       and
         (cb.id is null or cb.contribution_status_id > 1)
+      and
+        c.is_deleted = 0
+    ";
+    $sqlParams = [
+      1 => [$sourceValue, 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
+  public function getStatSepaCancelledFirst($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
+    $sql = "
+      select
+        count(*)
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      left outer join
+        civicrm_contribution cb on cb.id = m.first_contribution_id
+      where
+        m.type = 'RCUR'
+      and
+        m.source $sourceOperator %1
+      and
+        m.date between %2 and %3
+      and
+        cb.contribution_status_id = 3
       and
         c.is_deleted = 0
     ";
@@ -158,6 +200,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
@@ -175,7 +219,7 @@ class CRM_Cncdreporting_Ambassador {
     return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
   }
 
-  public function getStatSepaRealMinus25($ambassadorName, $fromDate, $toDate) {
+  public function getStatSepaRealUnderAge25($ambassadorName, $fromDate, $toDate) {
     [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
 
     $sql = "
@@ -186,6 +230,8 @@ class CRM_Cncdreporting_Ambassador {
       inner join
         civicrm_contact c on c.id = m.contact_id
       where
+        m.type = 'RCUR'
+      and
         m.source $sourceOperator %1
       and
         m.date between %2 and %3
