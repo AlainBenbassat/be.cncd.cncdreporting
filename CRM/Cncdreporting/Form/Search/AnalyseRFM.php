@@ -32,6 +32,9 @@ class CRM_Cncdreporting_Form_Search_AnalyseRFM extends CRM_Contact_Form_Search_C
       E::ts('Email') => 'email',
       E::ts('Postal Code') => 'postal_code',
       E::ts('City') => 'city',
+      'Nombre de dons' => 'num_contribs',
+      'Valeur moyenne' => 'avg_contribs',
+      'Total' => 'sum_contribs',
     ];
     return $columns;
   }

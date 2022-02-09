@@ -20,7 +20,10 @@ class CRM_Cncdreporting_RFM {
       contact_a.sort_name as sort_name,
       e.email as email,
       a.postal_code as postal_code,
-      a.city as city
+      a.city as city,
+      sum(contrib.total_amount) sum_contribs,
+	    count(contrib.id) num_contribs,
+	    round(avg(contrib.total_amount), 2) avg_contribs
     ";
   }
 
