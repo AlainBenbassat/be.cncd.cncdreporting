@@ -3,14 +3,14 @@
 class CRM_Cncdreporting_RFM {
   public function getCategoryCodes() {
     return [
-      'NRG New',
-      'NRG 001',
-      'NRG 010',
-      'NRG 011',
-      'NRG 100',
-      'NRG 101',
-      'NRG 110',
-      'NRG 111',
+      'new' => 'NRG New',
+      '001' => 'NRG 001',
+      '010' => 'NRG 010',
+      '011' => 'NRG 011',
+      '100' => 'NRG 100',
+      '101' => 'NRG 101',
+      '110' => 'NRG 110',
+      '111' => 'NRG 111',
     ];
   }
 
@@ -40,34 +40,99 @@ class CRM_Cncdreporting_RFM {
   }
 
   public function getWhere($referenceYear, $code) {
-    $where = "year(contrib.receive_date) = $referenceYear";
+    return $this->getWhereContributionType()
+      . $this->getWhereCode($referenceYear, $code);
+  }
 
-    // TODO
-    // add filter on financial type id
+  public function getGroupBy() {
+    return ' contact_a.id';
+  }
+
+  private function getWhereContributionType($subqueryId = '') {
+    // FINANCIAL_TYPE_DON = 1;
+    // FINANCIAL_TYPE_DON_NON_DEDUCTIBLE = 19;
+    // FINANCIAL_TYPE_DON_PONCTUEL = 15;
+    // FINANCIAL_TYPE_DON_POUR_CAMPAGNE = 3;
+    // FINANCIAL_TYPE_PARAINAGE = 17;
+    return " contrib$subqueryId.financial_type_id in (1, 19, 15, 3, 17) and contrib$subqueryId.contribution_status_id = 1 ";
+  }
+
+  private function getSubqueryContrib($numYearsAgo, $referenceYear) {
+    $y = $referenceYear - $numYearsAgo;
+
+    return "(
+      select
+        *
+      from
+        civicrm_contribution contrib$numYearsAgo
+      where
+        year(contrib$numYearsAgo.receive_date) = $y
+      and
+        contrib$numYearsAgo.contact_id = contact_a.id and
+    " . $this->getWhereContributionType($numYearsAgo) . ') ';
+  }
+
+  private function getWhereCode($referenceYear, $code) {
+    $where = '';
+    $lastYear = $referenceYear - 1;
+    $threeYearsAgo = $referenceYear - 3;
 
     switch ($code) {
-      case 'NRG New':
+      case 'new':
+        $where = "and year(contrib.receive_date) = $referenceYear";
         break;
-      case 'NRG 001':
+      case '001':
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 010';
+      case '010';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and not exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 011';
+      case '011';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 100';
+      case '100';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and not exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 101';
+      case '101';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and not exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 110';
+      case '110';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and not exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
-      case 'NRG 111';
+      case '111';
+        $where = "and year(contrib.receive_date) between $threeYearsAgo and $lastYear";
+        $where .= ' and exists ' . $this->getSubqueryContrib(1, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(2, $referenceYear);
+        $where .= ' and exists ' . $this->getSubqueryContrib(3, $referenceYear);
         break;
     }
 
     return $where;
   }
 
-  public function getGroupBy() {
-    return ' contact_a.id';
+  public function getSummaryCount($referenceYear, $categoryCode) {
+    $sql = 'select count(distinct contact_a.id) from '
+      . $this->getFrom()
+      . ' where ' . $this->getWhere($referenceYear, $categoryCode);
+
+    return CRM_Core_DAO::singleValueQuery($sql);
   }
 }

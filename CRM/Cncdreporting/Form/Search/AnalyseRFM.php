@@ -20,8 +20,8 @@ class CRM_Cncdreporting_Form_Search_AnalyseRFM extends CRM_Contact_Form_Search_C
 
   public function summary() {
     return [
-      'summary' => 'This is a summary',
-      'total' => '',
+      'summary' => $this->getSummaryTable(),
+      'total' => 'Année de référence = ' . CRM_Utils_Array::value('reference_year', $this->_formValues),
     ];
   }
 
@@ -143,6 +143,58 @@ class CRM_Cncdreporting_Form_Search_AnalyseRFM extends CRM_Contact_Form_Search_C
 
     return $elementName;
   }
+
+  private function getSummaryTable() {
+    $html = '<table>';
+    $html .= $this->getSummaryTableHeader();
+    $html .= $this->getSummaryTableRows();
+    $html .= '</table>';
+
+    return $html;
+  }
+
+  private function getSummaryTableHeader() {
+    $html = '<th>';
+
+    $cols = ['', 'Combien ?', '% Activité', 'Actifs', 'Fréquence', 'Valeur moyenne', 'Total'];
+
+    foreach ($cols as $col) {
+      $html .= "<td>$col</td>";
+    }
+
+    $html .= '</th>';
+
+    return $html;
+  }
+
+  private function getSummaryTableRows() {
+    $referenceYear = CRM_Utils_Array::value('reference_year', $this->_formValues);
+    $averageAmountFrom = CRM_Utils_Array::value('average_amount_from', $this->_formValues);
+    $averageAmountTo = CRM_Utils_Array::value('average_amount_to', $this->_formValues);
+    $ageFrom = CRM_Utils_Array::value('age_from', $this->_formValues);
+    $ageTo = CRM_Utils_Array::value('age_to', $this->_formValues);
+
+    $html = '';
+
+    $categoryCodes = $this->rfm->getCategoryCodes();
+
+    foreach ($categoryCodes as $categoryCode => $v) {
+      $html .= '<tr>';
+
+      $html .= "<td>$categoryCode</td>";
+      $html .= '<td>' . $this->rfm->getSummaryCount($referenceYear, $categoryCode) . '</td>';
+      $html .= "<td>&nbsp;</td>";
+      $html .= "<td>&nbsp;</td>";
+      $html .= "<td>&nbsp;</td>";
+      $html .= "<td>&nbsp;</td>";
+      $html .= "<td>&nbsp;</td>";
+
+      $html .= '</tr>';
+    }
+
+    return $html;
+  }
+
 
   public function templateFile() {
     return 'CRM/Contact/Form/Search/Custom.tpl';
