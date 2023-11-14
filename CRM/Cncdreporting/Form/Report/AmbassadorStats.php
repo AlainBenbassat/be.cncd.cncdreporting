@@ -152,7 +152,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
     $numSepaCompleted = $ambassador->getStatSepaCompleted('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_num_completed'] = $numSepaCompleted;
-    $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage('', $numSepaReal);
+    $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
 
     $numSepaCancelledFirst = $ambassador->getStatSepaCancelledFirst('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculateValueAndPercentage($numSepaCancelledFirst, $numSepaReal);
