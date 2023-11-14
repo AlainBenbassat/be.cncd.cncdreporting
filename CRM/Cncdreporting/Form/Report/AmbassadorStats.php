@@ -126,8 +126,9 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
     $row = [];
 
+    $numSepaStreet = $ambassador->getStatSepaStreet('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_name'] = 'TOTAL';
-    $row['civicrm_dummy_entity_num_sepa_street'] = $ambassador->getStatSepaStreet('', $dateFrom, $dateTo);
+    $row['civicrm_dummy_entity_num_sepa_street'] = $numSepaStreet;
 
     $numSepaReal = $ambassador->getStatSepaReal('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_num_sepa_real'] = $numSepaReal;
@@ -152,7 +153,7 @@ class CRM_Cncdreporting_Form_Report_AmbassadorStats extends CRM_Report_Form {
 
     $numSepaCompleted = $ambassador->getStatSepaCompleted('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_num_completed'] = $numSepaCompleted;
-    $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage($numSepaCompleted, $numSepaReal);
+    $row['civicrm_dummy_entity_pct_completed'] = $this->calculatePercentage($numSepaCompleted, $numSepaStreet);
 
     $numSepaCancelledFirst = $ambassador->getStatSepaCancelledFirst('', $dateFrom, $dateTo);
     $row['civicrm_dummy_entity_pct_cancelled_first'] = $this->calculateValueAndPercentage($numSepaCancelledFirst, $numSepaReal);
