@@ -59,6 +59,74 @@ class CRM_Cncdreporting_Ambassador {
     return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
   }
 
+  public function getStatSepaStreetSum($ambassadorName, $fromDate, $toDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
+    $sql = "
+      select
+        sum(cbr.amount)
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      inner join
+        civicrm_contribution_recur cbr on cbr.id = m.entity_id
+      where
+        m.type = 'RCUR'
+      and
+        m.source $sourceOperator %1
+      and
+        m.date between %2 and %3
+      and
+        c.is_deleted = 0
+    ";
+    $sqlParams = [
+      1 => [$sourceValue, 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
+  public function getStatSepaStreetSumContribs($ambassadorName, $fromDate, $toDate, $fromDateContribs, $toDateContribs) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
+    $sql = "
+      select
+        sum(cbr.amount)
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      inner join
+        civicrm_contribution_recur cbr on cbr.id = m.entity_id
+      inner join
+        civicrm_contribution cb on cb.contribution_recur_id = cbr.id
+      where
+        m.type = 'RCUR'
+      and
+        m.source $sourceOperator %1
+      and
+        m.date between %2 and %3
+      and
+        cb.contribution_status_id = 1
+      and
+        cb.receive_date between %4 and %5
+      and
+        c.is_deleted = 0
+    ";
+    $sqlParams = [
+      1 => [$sourceValue, 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+      4 => [$fromDateContribs, 'String'],
+      5 => [$toDateContribs, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
   public function getStatSepaRealWithValue($ambassadorName, $fromDate, $toDate, $valueExpression) {
     [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
 
