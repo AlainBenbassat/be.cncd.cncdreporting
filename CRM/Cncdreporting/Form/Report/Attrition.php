@@ -2,7 +2,7 @@
 use CRM_Cncdreporting_ExtensionUtil as E;
 
 class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
-  private CRM_Cncdreporting_Ambassador $ambassador;
+  private $ambassador;
 
   private $months = [
     '01' => 'Janvier',
