@@ -39,6 +39,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       'name' => 'Ambassadeur',
       'ref_month_num_sepa' => 'Nombre de SEPA',
       'ref_month_expected_amount' => 'Montant mensuel attendu (€)',
+      'month_0_pct_cancelled' => '% Annulations à N',
       'month_0_total_received' => 'Montant mensuel reçu à N',
       'month_1_num_active' => 'Nombre SEPA actif à N+1',
       'month_1_pct_cancelled' => '% Annulations à N+1',
@@ -225,7 +226,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
     $row["civicrm_dummy_entity_{$prefix}_evolution_total_received"] = '-' . round(($row["civicrm_dummy_entity_ref_month_expected_amount"] - $row["civicrm_dummy_entity_{$prefix}_total_received"]) / $row['civicrm_dummy_entity_ref_month_expected_amount'] * 100, 1) . ' %';
 
     if ($prefix != 'month_1') {
-      $row["civicrm_dummy_entity_{$prefix}_cumul_total_received"] = $this->ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth, $toDateContribsMonth);
+      $row["civicrm_dummy_entity_{$prefix}_cumul_total_received"] = $this->ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $refDateFrom, $toDateContribsMonth);
     }
   }
 
