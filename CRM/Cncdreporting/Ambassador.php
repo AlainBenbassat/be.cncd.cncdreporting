@@ -89,6 +89,73 @@ class CRM_Cncdreporting_Ambassador {
     return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
   }
 
+  public function getStatSepaStreetStillActive($ambassadorName, $fromDate, $toDate, $stillActiveFromDate, $stillActiveToDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
+    $sql = "
+      select
+        count(*)
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      inner join
+        civicrm_contribution_recur cbr on cbr.id = m.entity_id
+      where
+        m.type = 'RCUR'
+      and
+        m.source $sourceOperator %1
+      and
+        m.date between %2 and %3
+      and
+        ifnull(cbr.cancel_date, '3000-01-01 23:59:59') > %4
+      and
+        c.is_deleted = 0
+    ";
+    $sqlParams = [
+      1 => [$sourceValue, 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+      4 => [$stillActiveToDate, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
+  public function getStatSepaStreetCancelledInPeriod($ambassadorName, $fromDate, $toDate, $cancelledFromDate, $cancelledToDate) {
+    [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
+
+    $sql = "
+      select
+        count(*)
+      from
+        civicrm_sdd_mandate m
+      inner join
+        civicrm_contact c on c.id = m.contact_id
+      inner join
+        civicrm_contribution_recur cbr on cbr.id = m.entity_id
+      where
+        m.type = 'RCUR'
+      and
+        m.source $sourceOperator %1
+      and
+        m.date between %2 and %3
+      and
+        cbr.cancel_date between %4 and %5
+      and
+        c.is_deleted = 0
+    ";
+    $sqlParams = [
+      1 => [$sourceValue, 'String'],
+      2 => [$fromDate, 'String'],
+      3 => [$toDate, 'String'],
+      4 => [$cancelledFromDate, 'String'],
+      5 => [$cancelledToDate, 'String'],
+    ];
+
+    return CRM_Core_DAO::singleValueQuery($sql, $sqlParams);
+  }
+
   public function getStatSepaStreetSumContribs($ambassadorName, $fromDate, $toDate, $fromDateContribs, $toDateContribs) {
     [$sourceOperator, $sourceValue] = $this->getSourceOperatorAndValue($ambassadorName);
 

@@ -119,7 +119,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
   }
 
   public function from() {
-    // take small table
+    // take small table, we will build the report from scratch in alterDisplay()
     $this->_from = "FROM  civicrm_domain {$this->_aliases['civicrm_contact']} ";
   }
 
@@ -132,11 +132,28 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
   }
 
   public function alterDisplay(&$rows) {
-    // build the report from scratch
-
     [$refMonth, $refYear] = $this->getSignatureDateFilters();
-    $refDateFrom = "$refYear-$refMonth-01";
-    $refDateTo = date('Y-m-t', strtotime($refDateFrom));
+
+    $tmpDate = "$refYear-$refMonth-01";
+    [$refDateFrom, $refDateTo] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 1);
+    [$fromDateContribsMonth1, $toDateContribsMonth1] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 2);
+    [$fromDateContribsMonth2, $toDateContribsMonth2] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 3);
+    [$fromDateContribsMonth3, $toDateContribsMonth3] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 6);
+    [$fromDateContribsMonth6, $toDateContribsMonth6] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 12);
+    [$fromDateContribsMonth12, $toDateContribsMonth12] = $this->convertDateToPeriod($tmpDate);
+
+    $tmpDate = $this->addNumMonths($refDateFrom, 24);
+    [$fromDateContribsMonth24, $toDateContribsMonth24] = $this->convertDateToPeriod($tmpDate);
 
     $rows = [];
 
@@ -154,53 +171,41 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       $row['civicrm_dummy_entity_ref_month_num_sepa'] = $num;
       $row['civicrm_dummy_entity_ref_month_expected_amount'] = $ambassador->getStatSepaStreetSum($ambassadorName, $refDateFrom, $refDateTo);
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 1) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 1) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_1_num_active'] = '';
-      $row['civicrm_dummy_entity_month_1_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_1_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);
+      $row['civicrm_dummy_entity_month_1_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth1);
+      $row['civicrm_dummy_entity_month_1_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth1);
+      $row['civicrm_dummy_entity_month_1_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth1);
       $row['civicrm_dummy_entity_month_1_evolution_total_received'] = '';
       $row['civicrm_dummy_entity_month_1_cumul_total_received'] = '';
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 2) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 2) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_2_num_active'] = '';
-      $row['civicrm_dummy_entity_month_2_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_2_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);;
+      $row['civicrm_dummy_entity_month_2_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth2, $toDateContribsMonth2);
+      $row['civicrm_dummy_entity_month_2_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth2, $toDateContribsMonth2);
+      $row['civicrm_dummy_entity_month_2_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth2, $toDateContribsMonth2);
       $row['civicrm_dummy_entity_month_2_evolution_total_received'] = '';
-      $row['civicrm_dummy_entity_month_2_cumul_total_received'] = '';
+      $row['civicrm_dummy_entity_month_2_cumul_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth2);
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 3) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 3) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_3_num_active'] = '';
-      $row['civicrm_dummy_entity_month_3_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_3_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);;
+      $row['civicrm_dummy_entity_month_3_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth3, $toDateContribsMonth3);
+      $row['civicrm_dummy_entity_month_3_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth3, $toDateContribsMonth3);
+      $row['civicrm_dummy_entity_month_3_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth3, $toDateContribsMonth3);
       $row['civicrm_dummy_entity_month_3_evolution_total_received'] = '';
-      $row['civicrm_dummy_entity_month_3_cumul_total_received'] = '';
+      $row['civicrm_dummy_entity_month_3_cumul_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth3);
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 6) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 6) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_6_num_active'] = '';
-      $row['civicrm_dummy_entity_month_6_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_6_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);;
+      $row['civicrm_dummy_entity_month_6_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth6, $toDateContribsMonth6);
+      $row['civicrm_dummy_entity_month_6_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth6, $toDateContribsMonth6);
+      $row['civicrm_dummy_entity_month_6_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth6, $toDateContribsMonth6);
       $row['civicrm_dummy_entity_month_6_evolution_total_received'] = '';
-      $row['civicrm_dummy_entity_month_6_cumul_total_received'] = '';
+      $row['civicrm_dummy_entity_month_6_cumul_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth6);
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 12) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 12) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_12_num_active'] = '';
-      $row['civicrm_dummy_entity_month_12_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_12_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);;
+      $row['civicrm_dummy_entity_month_12_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth12, $toDateContribsMonth12);
+      $row['civicrm_dummy_entity_month_12_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth12, $toDateContribsMonth12);
+      $row['civicrm_dummy_entity_month_12_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth12, $toDateContribsMonth12);
       $row['civicrm_dummy_entity_month_12_evolution_total_received'] = '';
-      $row['civicrm_dummy_entity_month_12_cumul_total_received'] = '';
+      $row['civicrm_dummy_entity_month_12_cumul_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth12);
 
-      $fromDateContribs = $this->addNumMonths($refDateFrom, 24) . ' 00:00:00';
-      $toDateContribs = $this->addNumMonths(date('Y-m-t', strtotime($refDateFrom)), 24) . ' 23:59:59';
-      $row['civicrm_dummy_entity_month_24_num_active'] = '';
-      $row['civicrm_dummy_entity_month_24_pct_cancelled'] = '';
-      $row['civicrm_dummy_entity_month_24_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribs, $toDateContribs);;
+      $row['civicrm_dummy_entity_month_24_num_active'] = $ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth24, $toDateContribsMonth24);
+      $row['civicrm_dummy_entity_month_24_pct_cancelled'] = $ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth24, $toDateContribsMonth24);
+      $row['civicrm_dummy_entity_month_24_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth24, $toDateContribsMonth24);
       $row['civicrm_dummy_entity_month_24_evolution_total_received'] = '';
-      $row['civicrm_dummy_entity_month_24_cumul_total_received'] = '';
+      $row['civicrm_dummy_entity_month_24_cumul_total_received'] = $ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth24);
 
       $rows[] = $row;
     }
@@ -220,15 +225,22 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
     }
   }
 
-  private function getSignatureDateFilters() {
+  private function getSignatureDateFilters(): array {
     $values =  $this->exportValues();
 
     return [$values['signature_month_value'], $values['signature_year_value']];
   }
 
-  private function addNumMonths($baseDate, $numMonths) {
+  private function addNumMonths(string $baseDate, string $numMonths): string {
     $date = date_create($baseDate);
     date_add($date, date_interval_create_from_date_string("$numMonths months"));
     return date_format($date,'Y-m-d');
+  }
+
+  private function convertDateToPeriod(string $baseDate): array {
+    $from = $baseDate . ' 00:00:00';
+    $to = date('Y-m-t', strtotime($from)) . ' 23:59:59'; // t = last day of the month
+
+    return [$from, $to];
   }
 }
