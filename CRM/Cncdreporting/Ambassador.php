@@ -161,7 +161,7 @@ class CRM_Cncdreporting_Ambassador {
 
     $sql = "
       select
-        sum(cbr.amount)
+        ifnull(sum(cbr.amount), 0)
       from
         civicrm_sdd_mandate m
       inner join

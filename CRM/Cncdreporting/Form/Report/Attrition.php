@@ -39,33 +39,40 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       'name' => 'Ambassadeur',
       'ref_month_num_sepa' => 'Nombre de SEPA',
       'ref_month_expected_amount' => 'Montant mensuel attendu (€)',
+      'month_0_num_cancelled' => 'Nombre annulations à N',
       'month_0_pct_cancelled' => '% Annulations à N',
       'month_0_total_received' => 'Montant mensuel reçu à N',
       'month_1_num_active' => 'Nombre SEPA actif à N+1',
+      'month_1_num_cancelled' => 'Nombre annulations à N+1',
       'month_1_pct_cancelled' => '% Annulations à N+1',
       'month_1_total_received' => 'Montant mensuel reçu à N+1',
       'month_1_evolution_total_received' => 'Evolution Montant reçu à N+1',
       'month_2_num_active' => 'Nombre SEPA actif à N+2',
+      'month_2_num_cancelled' => 'Nombre annulations à N+2',
       'month_2_pct_cancelled' => '% Annulations à N+2',
       'month_2_total_received' => 'Montant mensuel reçu à N+2',
       'month_2_evolution_total_received' => 'Evolution Montant reçu à N+2',
       'month_2_cumul_total_received' => 'Cumul montant à N+2',
       'month_3_num_active' => 'Nombre SEPA actif à N+3',
+      'month_3_num_cancelled' => 'Nombre annulations à N+3',
       'month_3_pct_cancelled' => '% Annulations à N+3',
       'month_3_total_received' => 'Montant mensuel reçu à N+3',
       'month_3_evolution_total_received' => 'Evolution Montant reçu à N+3',
       'month_3_cumul_total_received' => 'Cumul montant à N+3',
       'month_6_num_active' => 'Nombre SEPA actif à N+6',
+      'month_6_num_cancelled' => 'Nombre annulations à N+6',
       'month_6_pct_cancelled' => '% Annulations à N+6',
       'month_6_total_received' => 'Montant mensuel reçu à N+6',
       'month_6_evolution_total_received' => 'Evolution Montant reçu à N+6',
       'month_6_cumul_total_received' => 'Cumul montant à N+6',
       'month_12_num_active' => 'Nombre SEPA actif à N+12',
+      'month_12_num_cancelled' => 'Nombre annulations à N+12',
       'month_12_pct_cancelled' => '% Annulations à N+12',
       'month_12_total_received' => 'Montant mensuel reçu à N+12',
       'month_12_evolution_total_received' => 'Evolution Montant reçu à N+12',
       'month_12_cumul_total_received' => 'Cumul montant à N+12',
       'month_24_num_active' => 'Nombre SEPA actif à N+24',
+      'month_24_num_cancelled' => 'Nombre annulations à N+24',
       'month_24_pct_cancelled' => '% Annulations à N+24',
       'month_24_total_received' => 'Montant mensuel reçu à N+24',
       'month_24_evolution_total_received' => 'Evolution Montant reçu à N+24',
@@ -186,12 +193,13 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       $rows[] = $row;
     }
 
-    // TOTALS
+    // add TOTALS
     $totalRow = [];
     $this->addTotals($rows, $totalRow);
     $this->makeBold($totalRow);
-
     $rows[] = $totalRow;
+
+    $this->correctDecimalSeparator($rows);
   }
 
   private function makeBold(&$row) {
@@ -221,7 +229,8 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
 
   private function calcRow(&$row, $prefix, $ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth, $toDateContribsMonth) {
     $row["civicrm_dummy_entity_{$prefix}_num_active"] = $this->ambassador->getStatSepaStreetStillActive($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth, $toDateContribsMonth);
-    $row["civicrm_dummy_entity_{$prefix}_pct_cancelled"] = round($this->ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $refDateFrom, $toDateContribsMonth) / $row['civicrm_dummy_entity_ref_month_num_sepa'] * 100, 1) . ' %';
+    $row["civicrm_dummy_entity_{$prefix}_num_cancelled"] = $this->ambassador->getStatSepaStreetCancelledInPeriod($ambassadorName, $refDateFrom, $refDateTo, $refDateFrom, $toDateContribsMonth);
+    $row["civicrm_dummy_entity_{$prefix}_pct_cancelled"] = round($row["civicrm_dummy_entity_{$prefix}_num_cancelled"] / $row['civicrm_dummy_entity_ref_month_num_sepa'] * 100, 1) . ' %';
     $row["civicrm_dummy_entity_{$prefix}_total_received"] = $this->ambassador->getStatSepaStreetSumContribs($ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth, $toDateContribsMonth);
     $row["civicrm_dummy_entity_{$prefix}_evolution_total_received"] = '-' . round(($row["civicrm_dummy_entity_ref_month_expected_amount"] - $row["civicrm_dummy_entity_{$prefix}_total_received"]) / $row['civicrm_dummy_entity_ref_month_expected_amount'] * 100, 1) . ' %';
 
@@ -245,6 +254,14 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
           case 'civicrm_dummy_entity_month_6_num_active':
           case 'civicrm_dummy_entity_month_12_num_active':
           case 'civicrm_dummy_entity_month_24_num_active':
+          case 'civicrm_dummy_entity_month_0_num_cancelled':
+          case 'civicrm_dummy_entity_month_1_num_cancelled':
+          case 'civicrm_dummy_entity_month_2_num_cancelled':
+          case 'civicrm_dummy_entity_month_3_num_cancelled':
+          case 'civicrm_dummy_entity_month_6_num_cancelled':
+          case 'civicrm_dummy_entity_month_12_num_cancelled':
+          case 'civicrm_dummy_entity_month_24_num_cancelled':
+          case 'civicrm_dummy_entity_month_0_total_received':
           case 'civicrm_dummy_entity_month_1_total_received':
           case 'civicrm_dummy_entity_month_2_total_received':
           case 'civicrm_dummy_entity_month_3_total_received':
@@ -260,9 +277,40 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
               $totalRow[$k] = empty($totalRow[$k]) ? $v : $totalRow[$k] + $v;
             }
             break;
+          case 'civicrm_dummy_entity_month_0_pct_cancelled':
+          case 'civicrm_dummy_entity_month_1_pct_cancelled':
+          case 'civicrm_dummy_entity_month_2_pct_cancelled':
+          case 'civicrm_dummy_entity_month_3_pct_cancelled':
+          case 'civicrm_dummy_entity_month_6_pct_cancelled':
+          case 'civicrm_dummy_entity_month_12_pct_cancelled':
+          case 'civicrm_dummy_entity_month_24_pct_cancelled':
+            $numColKey = str_replace('_pct_', '_num_', $k);
+            if (!empty($totalRow[$numColKey]) && !empty($totalRow['civicrm_dummy_entity_ref_month_num_sepa'])) {
+              $totalRow[$k] = round($totalRow[$numColKey] / $totalRow['civicrm_dummy_entity_ref_month_num_sepa'] * 100, 1) . ' %';
+            }
+            break;
+          case 'civicrm_dummy_entity_month_1_evolution_total_received':
+          case 'civicrm_dummy_entity_month_2_evolution_total_received':
+          case 'civicrm_dummy_entity_month_3_evolution_total_received':
+          case 'civicrm_dummy_entity_month_6_evolution_total_received':
+          case 'civicrm_dummy_entity_month_12_evolution_total_received':
+          case 'civicrm_dummy_entity_month_24_evolution_total_received':
+            $numColKey = str_replace('_evolution', '', $k);
+            if (!empty($totalRow[$numColKey]) && !empty($totalRow['civicrm_dummy_entity_ref_month_expected_amount'])) {
+              $totalRow[$k] = '-' . round(($totalRow['civicrm_dummy_entity_ref_month_expected_amount'] - $totalRow[$numColKey]) / $totalRow['civicrm_dummy_entity_ref_month_expected_amount'] * 100, 1) . ' %';
+            }
+            break;
           default:
             $totalRow[$k] = '';
         }
+      }
+    }
+  }
+
+  private function correctDecimalSeparator(&$rows) {
+    for ($i = 0; $i < count($rows); $i++) {
+      foreach ($rows[$i] as $k => $v) {
+        $rows[$i][$k] = str_replace('.', ',', $v);
       }
     }
   }
