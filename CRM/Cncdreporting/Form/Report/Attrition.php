@@ -39,6 +39,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       'name' => 'Ambassadeur',
       'ref_month_num_sepa' => 'Nombre de SEPA',
       'ref_month_expected_amount' => 'Montant mensuel attendu (€)',
+      'month_0_total_received' => 'Montant mensuel reçu à N',
       'month_1_num_active' => 'Nombre SEPA actif à N+1',
       'month_1_pct_cancelled' => '% Annulations à N+1',
       'month_1_total_received' => 'Montant mensuel reçu à N+1',
@@ -173,6 +174,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
       $row['civicrm_dummy_entity_ref_month_num_sepa'] = $num;
       $row['civicrm_dummy_entity_ref_month_expected_amount'] = $this->ambassador->getStatSepaStreetSum($ambassadorName, $refDateFrom, $refDateTo);
 
+      $this->calcRow($row, 'month_0', $ambassadorName, $refDateFrom, $refDateTo, $refDateFrom . ' 00:00:00', $refDateTo . ' 23:59:59');
       $this->calcRow($row, 'month_1', $ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth1, $toDateContribsMonth1);
       $this->calcRow($row, 'month_2', $ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth2, $toDateContribsMonth2);
       $this->calcRow($row, 'month_3', $ambassadorName, $refDateFrom, $refDateTo, $fromDateContribsMonth3, $toDateContribsMonth3);
