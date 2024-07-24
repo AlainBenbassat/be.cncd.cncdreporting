@@ -412,6 +412,17 @@ class CRM_Cncdreporting_Ambassador {
     return $ambassadors;
   }
 
+  public function getAllAmbassadorsAlt() {
+    $ambassadors = [];
+    $sql = "select distinct source as label from civicrm_sdd_mandate where type = 'RCUR' and date > '2013-12-31'";//" and source not like '%mailing%' and source not like '%papier%'";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      $ambassadors[] = $dao->label;
+    }
+
+    return $ambassadors;
+  }
+
   private function getSourceOperatorAndValue($ambassadorName) {
     if (empty($ambassadorName)) {
       $operator = 'not like';

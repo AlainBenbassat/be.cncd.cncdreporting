@@ -169,7 +169,7 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
 
     $rows = [];
 
-    $ambassadorNames = $this->ambassador->getAllAmbassadors();
+    $ambassadorNames = $this->ambassador->getAllAmbassadorsAlt();
     foreach ($ambassadorNames as $ambassadorName) {
       $num = $this->ambassador->getStatSepaStreet($ambassadorName, $refDateFrom, $refDateTo);
       if ($num == 0) {
