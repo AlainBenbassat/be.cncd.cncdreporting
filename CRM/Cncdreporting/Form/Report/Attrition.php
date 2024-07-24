@@ -256,7 +256,9 @@ class CRM_Cncdreporting_Form_Report_Attrition extends CRM_Report_Form {
           case 'civicrm_dummy_entity_month_6_cumul_total_received':
           case 'civicrm_dummy_entity_month_12_cumul_total_received':
           case 'civicrm_dummy_entity_month_24_cumul_total_received':
-            $totalRow[$k] = empty($totalRow[$k]) ? $v : $totalRow[$k] + $v;
+            if ($v) {
+              $totalRow[$k] = empty($totalRow[$k]) ? $v : $totalRow[$k] + $v;
+            }
             break;
           default:
             $totalRow[$k] = '';
