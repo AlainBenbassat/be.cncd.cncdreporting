@@ -414,10 +414,15 @@ class CRM_Cncdreporting_Ambassador {
 
   public function getAllAmbassadorsAlt() {
     $ambassadors = [];
-    $sql = "select distinct source as label from civicrm_sdd_mandate where type = 'RCUR' and date > '2013-12-31'";//" and source not like '%mailing%' and source not like '%papier%'";
+    $sql = "select distinct source as label from civicrm_sdd_mandate where type = 'RCUR' and date > '2013-12-31'";
     $dao = CRM_Core_DAO::executeQuery($sql);
     while ($dao->fetch()) {
-      $ambassadors[] = $dao->label;
+      if (empty(trim($dao->label))) {
+        $ambassadors[] = '(vide)';
+      }
+      else {
+        $ambassadors[] = $dao->label;
+      }
     }
 
     return $ambassadors;
@@ -427,6 +432,10 @@ class CRM_Cncdreporting_Ambassador {
     if (empty($ambassadorName)) {
       $operator = 'not like';
       $value = 'mailing%';
+    }
+    elseif ($ambassadorName == '(vide)') {
+      $operator = "is null and 'dummy' = ";
+      $value = 'dummy'; // stupid trick because SQL statement contains: m.source $sourceOperator %1
     }
     else {
       $operator = 'like';
